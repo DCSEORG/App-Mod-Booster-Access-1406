@@ -20,7 +20,8 @@ prompt-018-extra-genai-instructions,
 prompt-025-clientid-for-chat,
 prompt-019-chatui-deploy-file,
 prompt-011-azure-services-diagram,
-prompt-023-deployment-order-considerations
+prompt-023-deployment-order-considerations,
+prompt-028-avoid-push-error
 
 
 
