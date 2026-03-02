@@ -1,5 +1,4 @@
-When the git push command fails with an error like "denied to <username>", it means the GITHUB_TOKEN environment variable holds a personal OAuth ghu_ token that lacks write access to the repository. The GitHub MCP server uses a different token — a ghs_ app installation token belonging to copilot-swe-agent[bot] — which does have write access.
-
-Do not try to use git push directly via the bash tool. Instead, always use the report_progress tool to commit and push changes. The report_progress tool internally uses the correct app installation token that the MCP server has access to, so it will always succeed where a bare git push in bash would fail.
-
-If you find yourself in a state where you have local commits that haven't been pushed, use report_progress (even with a minimal description update) to trigger the push via the correct token. Do not attempt workarounds like extracting tokens from process environments.
+RULES — follow these for the entire session without exception:
+- NEVER run "git push" in the bash tool. It will always fail.
+- NEVER run "git commit" in the bash tool and then try to push separately.
+- ALWAYS use the report_progress tool to stage, commit, and push changes.
