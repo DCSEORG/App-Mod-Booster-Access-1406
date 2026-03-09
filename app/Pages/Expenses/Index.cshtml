@@ -1,0 +1,103 @@
+@page
+@model ExpenseApp.Pages.Expenses.ExpensesListModel
+@{
+    ViewData["Title"] = "Expenses";
+    ViewData["ErrorMessage"] = Model.ErrorMessage;
+}
+
+<div class="card-header" style="margin-bottom:20px">
+    <h1 style="font-size:1.5rem;font-weight:600">Expenses</h1>
+    <a href="/Expenses/Create" class="btn btn-primary">+ New Expense</a>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <form method="get">
+        <div class="filter-bar">
+            <div class="form-group">
+                <label>Employee</label>
+                <select name="userId" onchange="this.form.submit()">
+                    <option value="">All Employees</option>
+                    @foreach (var u in Model.Users)
+                    {
+                        <option value="@u.UserId" selected="@(Model.SelectedUserId == u.UserId)">@u.UserName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="statusId" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    @foreach (var s in Model.Statuses)
+                    {
+                        <option value="@s.StatusId" selected="@(Model.SelectedStatusId == s.StatusId)">@s.StatusName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="categoryId" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    @foreach (var c in Model.Categories)
+                    {
+                        <option value="@c.CategoryId" selected="@(Model.SelectedCategoryId == c.CategoryId)">@c.CategoryName</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Employee</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th class="text-right">Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model.Expenses)
+            {
+                <tr>
+                    <td>@e.ExpenseId</td>
+                    <td>@e.UserName</td>
+                    <td>@e.CategoryName</td>
+                    <td>@e.ExpenseDate.ToString("dd MMM yyyy")</td>
+                    <td>@(e.Description?.Length > 50 ? e.Description[..50] + "…" : e.Description)</td>
+                    <td class="text-right">£@e.AmountGBP.ToString("N2")</td>
+                    <td><span class="badge badge-@e.StatusName.ToLower()">@e.StatusName</span></td>
+                    <td class="actions">
+                        <a href="/Expenses/Detail?id=@e.ExpenseId" class="btn btn-secondary btn-sm">View</a>
+                        @if (e.StatusName == "Draft")
+                        {
+                            <a href="/Expenses/Edit?id=@e.ExpenseId" class="btn btn-secondary btn-sm">Edit</a>
+                        }
+                        @if (e.StatusName == "Submitted")
+                        {
+                            <form method="post" asp-page-handler="Approve" style="display:inline">
+                                <input type="hidden" name="expenseId" value="@e.ExpenseId" />
+                                <input type="hidden" name="reviewedBy" value="2" />
+                                <button class="btn btn-success btn-sm" type="submit" onclick="return confirm('Approve this expense?')">Approve</button>
+                            </form>
+                            <form method="post" asp-page-handler="Reject" style="display:inline">
+                                <input type="hidden" name="expenseId" value="@e.ExpenseId" />
+                                <input type="hidden" name="reviewedBy" value="2" />
+                                <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Reject this expense?')">Reject</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (!Model.Expenses.Any())
+            {
+                <tr><td colspan="8" style="text-align:center;color:var(--text-secondary);padding:32px">No expenses found.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

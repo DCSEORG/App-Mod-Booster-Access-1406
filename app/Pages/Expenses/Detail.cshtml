@@ -1,0 +1,61 @@
+@page
+@model ExpenseApp.Pages.Expenses.DetailModel
+@{
+    ViewData["Title"] = $"Expense #{Model.Expense?.ExpenseId}";
+    ViewData["ErrorMessage"] = Model.ErrorMessage;
+}
+
+@if (Model.Expense is null)
+{
+    <p>Expense not found.</p>
+}
+else
+{
+    <div class="card-header" style="margin-bottom:20px">
+        <h1 style="font-size:1.5rem;font-weight:600">Expense #@Model.Expense.ExpenseId</h1>
+        <div class="actions">
+            @if (Model.Expense.StatusName == "Draft")
+            {
+                <a href="/Expenses/Edit?id=@Model.Expense.ExpenseId" class="btn btn-primary">Edit</a>
+                <form method="post" asp-page-handler="Submit" style="display:inline">
+                    <input type="hidden" name="expenseId" value="@Model.Expense.ExpenseId" />
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Submit this expense for approval?')">Submit for Approval</button>
+                </form>
+                <form method="post" asp-page-handler="Delete" style="display:inline">
+                    <input type="hidden" name="expenseId" value="@Model.Expense.ExpenseId" />
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this draft expense?')">Delete</button>
+                </form>
+            }
+            @if (Model.Expense.StatusName == "Submitted")
+            {
+                <form method="post" asp-page-handler="Approve" style="display:inline">
+                    <input type="hidden" name="expenseId" value="@Model.Expense.ExpenseId" />
+                    <input type="hidden" name="reviewedBy" value="2" />
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Approve this expense?')">Approve</button>
+                </form>
+                <form method="post" asp-page-handler="Reject" style="display:inline">
+                    <input type="hidden" name="expenseId" value="@Model.Expense.ExpenseId" />
+                    <input type="hidden" name="reviewedBy" value="2" />
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Reject this expense?')">Reject</button>
+                </form>
+            }
+            <a href="/Expenses" class="btn btn-secondary">← Back</a>
+        </div>
+    </div>
+
+    <div class="card" style="max-width:640px">
+        <table>
+            <tr><th style="width:160px">Status</th><td><span class="badge badge-@Model.Expense.StatusName.ToLower()">@Model.Expense.StatusName</span></td></tr>
+            <tr><th>Employee</th><td>@Model.Expense.UserName</td></tr>
+            <tr><th>Category</th><td>@Model.Expense.CategoryName</td></tr>
+            <tr><th>Amount</th><td style="font-weight:600;font-size:1.1rem">£@Model.Expense.AmountGBP.ToString("N2")</td></tr>
+            <tr><th>Date</th><td>@Model.Expense.ExpenseDate.ToString("dd MMMM yyyy")</td></tr>
+            <tr><th>Description</th><td>@(Model.Expense.Description ?? "—")</td></tr>
+            <tr><th>Receipt</th><td>@(Model.Expense.ReceiptFile ?? "—")</td></tr>
+            <tr><th>Submitted</th><td>@(Model.Expense.SubmittedAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</td></tr>
+            <tr><th>Reviewed By</th><td>@(Model.Expense.ReviewedByName ?? "—")</td></tr>
+            <tr><th>Reviewed At</th><td>@(Model.Expense.ReviewedAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</td></tr>
+            <tr><th>Created</th><td>@Model.Expense.CreatedAt.ToString("dd MMM yyyy HH:mm")</td></tr>
+        </table>
+    </div>
+}

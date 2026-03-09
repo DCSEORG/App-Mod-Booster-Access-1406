@@ -1,0 +1,39 @@
+## .NET / ASP.NET Core
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.swp
+
+## Published output (but NOT app.zip — needed for deployment)
+app/publish/
+
+## Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+## Python virtual environments
+.venv/
+venv/
+env/
+
+## OS artefacts
+.DS_Store
+Thumbs.db
+*.orig
+
+## Backup files created by sed -i.bak
+*.bak
+
+## Secrets / local config overrides
+appsettings.Local.json
+*.secrets.json
+.env
+.env.*
+
+## IDE
+.idea/
+*.iml

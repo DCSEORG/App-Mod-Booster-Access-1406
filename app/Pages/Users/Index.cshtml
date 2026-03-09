@@ -1,0 +1,39 @@
+@page
+@model ExpenseApp.Pages.Users.UsersListModel
+@{
+    ViewData["Title"] = "Users";
+    ViewData["ErrorMessage"] = Model.ErrorMessage;
+}
+
+<div class="card-header" style="margin-bottom:20px">
+    <h1 style="font-size:1.5rem;font-weight:600">Users</h1>
+    <a href="/Users/Create" class="btn btn-primary">+ Add User</a>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Manager</th>
+                <th>Active</th>
+                <th>Joined</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model.Users)
+            {
+                <tr>
+                    <td>@u.UserName</td>
+                    <td>@u.Email</td>
+                    <td><span class="badge @(u.RoleName == "Manager" ? "badge-submitted" : "badge-draft")">@u.RoleName</span></td>
+                    <td>@(u.ManagerName ?? "—")</td>
+                    <td>@(u.IsActive ? "✓" : "—")</td>
+                    <td>@u.CreatedAt.ToString("dd MMM yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – Expense Manager</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --surface: #ffffff;
+            --background: #f8f9fa;
+            --border: #e0e0e0;
+            --text: #202124;
+            --text-secondary: #5f6368;
+            --success: #34a853;
+            --warning: #fbbc04;
+            --danger: #ea4335;
+            --info: #4285f4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Google Sans', Roboto, Arial, sans-serif; background: var(--background); color: var(--text); }
+        .navbar { background: var(--primary); padding: 0 24px; height: 56px; display: flex; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+        .navbar-brand { color: white; font-size: 1.2rem; font-weight: 500; text-decoration: none; margin-right: 32px; }
+        .nav-links { display: flex; gap: 8px; }
+        .nav-links a { color: rgba(255,255,255,.85); text-decoration: none; padding: 8px 12px; border-radius: 4px; font-size: .875rem; transition: background .15s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,.15); color: white; }
+        .error-banner { background: #fce8e6; border-left: 4px solid var(--danger); color: #c5221f; padding: 12px 24px; font-size: .85rem; line-height: 1.5; }
+        .error-banner strong { display: block; margin-bottom: 4px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+        .card { background: var(--surface); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 24px; margin-bottom: 20px; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .card-title { font-size: 1.1rem; font-weight: 500; color: var(--text); }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: .875rem; font-weight: 500; border-radius: 4px; cursor: pointer; border: none; text-decoration: none; transition: all .15s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #2d9148; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #d93025; }
+        .btn-secondary { background: white; color: var(--primary); border: 1px solid var(--primary); }
+        .btn-secondary:hover { background: #e8f0fe; }
+        .btn-sm { padding: 5px 10px; font-size: .8rem; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: .75rem; font-weight: 500; }
+        .badge-draft { background: #e8eaed; color: #5f6368; }
+        .badge-submitted { background: #e8f0fe; color: #1a73e8; }
+        .badge-approved { background: #e6f4ea; color: #188038; }
+        .badge-rejected { background: #fce8e6; color: #c5221f; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 12px; font-size: .8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .05em; border-bottom: 2px solid var(--border); }
+        td { padding: 12px; font-size: .875rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8f9fa; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: .875rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+        input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; font-size: .875rem; color: var(--text); background: white; transition: border .15s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,.2); }
+        .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+        .filter-bar .form-group { margin-bottom: 0; min-width: 160px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+        .summary-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.1); text-align: center; }
+        .summary-card .count { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .summary-card .label { font-size: .875rem; color: var(--text-secondary); margin-top: 4px; }
+        .summary-card .amount { font-size: 1rem; font-weight: 600; color: var(--text); }
+        .text-right { text-align: right; }
+        .actions { display: flex; gap: 6px; }
+        .chat-fab { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,.3); cursor: pointer; text-decoration: none; color: white; font-size: 1.5rem; transition: transform .15s; }
+        .chat-fab:hover { transform: scale(1.08); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a class="navbar-brand" href="/Index">💰 Expense Manager</a>
+        <div class="nav-links">
+            <a href="/Index">Dashboard</a>
+            <a href="/Expenses">Expenses</a>
+            <a href="/Expenses/Create">+ New Expense</a>
+            <a href="/Users">Users</a>
+            <a href="/swagger" target="_blank">API Docs</a>
+        </div>
+    </nav>
+
+    @if (ViewData["ErrorMessage"] is string errorMsg && !string.IsNullOrEmpty(errorMsg))
+    {
+        <div class="error-banner">
+            <strong>⚠ Database connection issue (showing demo data)</strong>
+            @errorMsg
+        </div>
+    }
+
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    <a class="chat-fab" href="/chatui/index.html" title="AI Assistant" target="_blank">💬</a>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

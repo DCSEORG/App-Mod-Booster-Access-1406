@@ -1,0 +1,60 @@
+@page
+@model ExpenseApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["ErrorMessage"] = Model.ErrorMessage;
+}
+
+<div class="card-header" style="margin-bottom:20px">
+    <h1 style="font-size:1.5rem;font-weight:600">Dashboard</h1>
+    <a href="/Expenses/Create" class="btn btn-primary">+ New Expense</a>
+</div>
+
+<div class="summary-grid" style="margin-bottom:24px">
+    @foreach (var s in Model.Summary)
+    {
+        <div class="summary-card">
+            <div class="count">@s.ExpenseCount</div>
+            <div class="label">@s.StatusName</div>
+            <div class="amount">£@s.TotalAmountGBP.ToString("N2")</div>
+        </div>
+    }
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Recent Expenses</span>
+        <a href="/Expenses" class="btn btn-secondary btn-sm">View All</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th class="text-right">Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model.RecentExpenses)
+            {
+                <tr>
+                    <td>@e.UserName</td>
+                    <td>@e.CategoryName</td>
+                    <td>@e.ExpenseDate.ToString("dd MMM yyyy")</td>
+                    <td class="text-right">£@e.AmountGBP.ToString("N2")</td>
+                    <td><span class="badge badge-@e.StatusName.ToLower()">@e.StatusName</span></td>
+                    <td class="actions">
+                        <a href="/Expenses/Detail?id=@e.ExpenseId" class="btn btn-secondary btn-sm">View</a>
+                        @if (e.StatusName == "Draft")
+                        {
+                            <a href="/Expenses/Edit?id=@e.ExpenseId" class="btn btn-secondary btn-sm">Edit</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

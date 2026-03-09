@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Assistant</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #0f6cbd;
+            --primary-dark: #0d5ca8;
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --border: #e0e0e0;
+            --text: #212121;
+            --text-secondary: #757575;
+            --user-bubble: #0f6cbd;
+            --assistant-bubble: #f0f4fa;
+            --error: #d32f2f;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        header .back {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        header .subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        #error-banner {
+            display: none;
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #e65100;
+            flex-shrink: 0;
+        }
+
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 80%;
+        }
+
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message.assistant { align-self: flex-start; }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .message.user .avatar { background: var(--user-bubble); color: #fff; }
+        .message.assistant .avatar { background: #e3f2fd; color: var(--primary); }
+
+        .bubble {
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.user .bubble {
+            background: var(--user-bubble);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .bubble {
+            background: var(--assistant-bubble);
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+        }
+
+        .bubble strong { font-weight: 600; }
+        .bubble ul, .bubble ol { padding-left: 20px; margin-top: 4px; }
+        .bubble li { margin-bottom: 2px; }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px; height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        #input-area {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        #user-input {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            max-height: 120px;
+            overflow-y: auto;
+            transition: border-color 0.2s;
+        }
+
+        #user-input:focus { border-color: var(--primary); }
+
+        #send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        #send-btn:hover { background: var(--primary-dark); }
+        #send-btn:disabled { background: #bdbdbd; cursor: not-allowed; }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 20px 12px;
+        }
+
+        .suggestion-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--primary);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .suggestion-chip:hover { background: #e3f2fd; border-color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/Index" class="back">&#8592;</a>
+    <div>
+        <h1>Expense Assistant</h1>
+        <div class="subtitle">AI-powered expense management help</div>
+    </div>
+</header>
+
+<div id="error-banner"></div>
+
+<div id="messages">
+    <!-- Welcome message -->
+    <div class="message assistant">
+        <div class="avatar">&#x1F916;</div>
+        <div class="bubble">
+            Hello! I'm your expense management assistant. I can help you:<br><br>
+            <ul>
+                <li>View and search expenses</li>
+                <li>Check expense summaries and totals</li>
+                <li>Submit, approve, or reject expenses</li>
+                <li>Look up user information</li>
+            </ul>
+            <br>What would you like to do?
+        </div>
+    </div>
+</div>
+
+<div class="suggestions" id="suggestions">
+    <button class="suggestion-chip" onclick="sendSuggestion('Show me the expense summary')">Show expense summary</button>
+    <button class="suggestion-chip" onclick="sendSuggestion('Show me all submitted expenses')">Submitted expenses</button>
+    <button class="suggestion-chip" onclick="sendSuggestion('Who are the users?')">List users</button>
+    <button class="suggestion-chip" onclick="sendSuggestion('Show me all draft expenses')">Draft expenses</button>
+</div>
+
+<div id="input-area">
+    <textarea id="user-input" placeholder="Ask me anything about expenses..." rows="1"></textarea>
+    <button id="send-btn" title="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+    </button>
+</div>
+
+<script>
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const errorBanner = document.getElementById('error-banner');
+    const suggestionsEl = document.getElementById('suggestions');
+
+    // Conversation history (sent to the backend)
+    const history = [];
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function renderMarkdown(text) {
+        // Escape HTML first
+        let safe = escapeHtml(text);
+        // Bold **text**
+        safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // Bullet lists (lines starting with - or *)
+        safe = safe.replace(/^[*-] (.+)$/gm, '<li>$1</li>');
+        safe = safe.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+        // Line breaks
+        safe = safe.replace(/\n/g, '<br>');
+        return safe;
+    }
+
+    function appendMessage(role, text) {
+        const wrapper = document.createElement('div');
+        wrapper.className = `message ${role}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = role === 'user' ? '👤' : '🤖';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerHTML = renderMarkdown(text);
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+        messagesEl.appendChild(wrapper);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return wrapper;
+    }
+
+    function showTyping() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message assistant';
+        wrapper.id = 'typing';
+
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = '🤖';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble typing-indicator';
+        bubble.innerHTML = '<span></span><span></span><span></span>';
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+        messagesEl.appendChild(wrapper);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function removeTyping() {
+        const el = document.getElementById('typing');
+        if (el) el.remove();
+    }
+
+    function showError(message) {
+        errorBanner.textContent = message;
+        errorBanner.style.display = 'block';
+        setTimeout(() => { errorBanner.style.display = 'none'; }, 7000);
+    }
+
+    async function sendMessage(text) {
+        if (!text.trim()) return;
+
+        // Hide suggestions after first message
+        suggestionsEl.style.display = 'none';
+
+        appendMessage('user', text);
+        history.push({ role: 'user', content: text });
+
+        inputEl.value = '';
+        inputEl.style.height = 'auto';
+        sendBtn.disabled = true;
+        showTyping();
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: history })
+            });
+
+            removeTyping();
+
+            if (!response.ok) {
+                const err = await response.text();
+                throw new Error(err || `HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.error) {
+                showError(data.error);
+            }
+
+            appendMessage('assistant', data.reply);
+            history.push({ role: 'assistant', content: data.reply });
+
+        } catch (err) {
+            removeTyping();
+            showError(`Failed to get a response: ${err.message}`);
+            appendMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+        } finally {
+            sendBtn.disabled = false;
+            inputEl.focus();
+        }
+    }
+
+    function sendSuggestion(text) {
+        inputEl.value = text;
+        sendMessage(text);
+    }
+
+    sendBtn.addEventListener('click', () => sendMessage(inputEl.value));
+
+    inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage(inputEl.value);
+        }
+    });
+
+    // Auto-resize textarea
+    inputEl.addEventListener('input', () => {
+        inputEl.style.height = 'auto';
+        inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+    });
+</script>
+</body>
+</html>
