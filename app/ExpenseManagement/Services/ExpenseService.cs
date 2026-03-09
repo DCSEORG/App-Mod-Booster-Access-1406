@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using ExpenseManagement.Models;
 using Microsoft.Data.SqlClient;
 
@@ -8,7 +7,7 @@ namespace ExpenseManagement.Services;
 /// Implements all database operations via stored procedures.
 /// Connects to Azure SQL using the user-assigned Managed Identity - no username/password.
 /// Falls back to dummy data when the database is unreachable, and surfaces a detailed
-/// error message (file + line number) for display in the header error bar.
+/// error message (including class/method name) for display in the header error bar.
 /// </summary>
 public class ExpenseService : IExpenseService
 {
@@ -22,31 +21,16 @@ public class ExpenseService : IExpenseService
         _logger = logger;
     }
 
-    // ---------------------------------------------------------------
-    // Helper: open a connection using Managed Identity (no secrets)
-    // ---------------------------------------------------------------
     private SqlConnection CreateConnection() => new SqlConnection(_connectionString);
 
-    // ---------------------------------------------------------------
-    // Helper: build a rich error message that includes file + line
-    // ---------------------------------------------------------------
-    private static string BuildError(Exception ex, string callerFile, int callerLine)
-    {
-        var fileName = Path.GetFileName(callerFile);
-        return $"Database error in {fileName} (line {callerLine}): {ex.GetType().Name} – {ex.Message}. " +
-               $"If using Managed Identity, ensure the identity has been granted db_datareader/db_datawriter " +
-               $"roles on the Northwind database (run run-sql-dbrole.py) and that the App Service has " +
-               $"AZURE_CLIENT_ID set to the managed identity client ID.";
-    }
+    private static string BuildError(Exception ex, string context) =>
+        $"Database error in ExpenseService.{context}: {ex.GetType().Name} – {ex.Message}. " +
+        $"If using Managed Identity, ensure the identity has been granted db_datareader/db_datawriter " +
+        $"roles on the Northwind database (run run-sql-dbrole.py) and that the App Service has " +
+        $"AZURE_CLIENT_ID set to the managed identity client ID.";
 
-    // ---------------------------------------------------------------
-    // GetAllExpenses
-    // ---------------------------------------------------------------
     public async Task<(List<Expense> Expenses, string? ErrorMessage)> GetAllExpensesAsync(
-        string? filter = null,
-        string? statusFilter = null,
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+        string? filter = null, string? statusFilter = null)
     {
         try
         {
@@ -58,27 +42,16 @@ public class ExpenseService : IExpenseService
             };
             cmd.Parameters.AddWithValue("@Filter",       (object?)filter       ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@StatusFilter", (object?)statusFilter ?? DBNull.Value);
-
             return (await ReadExpensesAsync(cmd), null);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "GetAllExpenses failed");
-            return (GetDummyExpenses(), BuildError(ex, callerFile, callerLine));
+            return (GetDummyExpenses(), BuildError(ex, "GetAllExpensesAsync"));
         }
     }
 
-    public async Task<(List<Expense> Expenses, string? ErrorMessage)> GetAllExpensesAsync(
-        string? filter = null, string? statusFilter = null)
-        => await GetAllExpensesAsync(filter, statusFilter);
-
-    // ---------------------------------------------------------------
-    // GetExpenseById
-    // ---------------------------------------------------------------
-    public async Task<(Expense? Expense, string? ErrorMessage)> GetExpenseByIdAsync(
-        int expenseId,
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(Expense? Expense, string? ErrorMessage)> GetExpenseByIdAsync(int expenseId)
     {
         try
         {
@@ -95,20 +68,11 @@ public class ExpenseService : IExpenseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "GetExpenseById failed");
-            return (null, BuildError(ex, callerFile, callerLine));
+            return (null, BuildError(ex, "GetExpenseByIdAsync"));
         }
     }
 
-    public async Task<(Expense? Expense, string? ErrorMessage)> GetExpenseByIdAsync(int expenseId)
-        => await GetExpenseByIdAsync(expenseId);
-
-    // ---------------------------------------------------------------
-    // CreateExpense
-    // ---------------------------------------------------------------
-    public async Task<(int NewId, string? ErrorMessage)> CreateExpenseAsync(
-        CreateExpenseRequest request,
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(int NewId, string? ErrorMessage)> CreateExpenseAsync(CreateExpenseRequest request)
     {
         try
         {
@@ -125,27 +89,17 @@ public class ExpenseService : IExpenseService
             cmd.Parameters.AddWithValue("@ExpenseDate", request.ExpenseDate.Date);
             cmd.Parameters.AddWithValue("@Description", (object?)request.Description ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@ReceiptFile", (object?)request.ReceiptFile ?? DBNull.Value);
-
             var result = await cmd.ExecuteScalarAsync();
             return (Convert.ToInt32(result), null);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "CreateExpense failed");
-            return (-1, BuildError(ex, callerFile, callerLine));
+            return (-1, BuildError(ex, "CreateExpenseAsync"));
         }
     }
 
-    public async Task<(int NewId, string? ErrorMessage)> CreateExpenseAsync(CreateExpenseRequest request)
-        => await CreateExpenseAsync(request);
-
-    // ---------------------------------------------------------------
-    // SubmitExpense
-    // ---------------------------------------------------------------
-    public async Task<(bool Success, string? ErrorMessage)> SubmitExpenseAsync(
-        int expenseId, int userId,
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(bool Success, string? ErrorMessage)> SubmitExpenseAsync(int expenseId, int userId)
     {
         try
         {
@@ -163,20 +117,11 @@ public class ExpenseService : IExpenseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "SubmitExpense failed");
-            return (false, BuildError(ex, callerFile, callerLine));
+            return (false, BuildError(ex, "SubmitExpenseAsync"));
         }
     }
 
-    public async Task<(bool Success, string? ErrorMessage)> SubmitExpenseAsync(int expenseId, int userId)
-        => await SubmitExpenseAsync(expenseId, userId);
-
-    // ---------------------------------------------------------------
-    // ApproveExpense
-    // ---------------------------------------------------------------
-    public async Task<(bool Success, string? ErrorMessage)> ApproveExpenseAsync(
-        int expenseId, int reviewerUserId,
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(bool Success, string? ErrorMessage)> ApproveExpenseAsync(int expenseId, int reviewerUserId)
     {
         try
         {
@@ -194,20 +139,11 @@ public class ExpenseService : IExpenseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "ApproveExpense failed");
-            return (false, BuildError(ex, callerFile, callerLine));
+            return (false, BuildError(ex, "ApproveExpenseAsync"));
         }
     }
 
-    public async Task<(bool Success, string? ErrorMessage)> ApproveExpenseAsync(int expenseId, int reviewerUserId)
-        => await ApproveExpenseAsync(expenseId, reviewerUserId);
-
-    // ---------------------------------------------------------------
-    // RejectExpense
-    // ---------------------------------------------------------------
-    public async Task<(bool Success, string? ErrorMessage)> RejectExpenseAsync(
-        int expenseId, int reviewerUserId,
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(bool Success, string? ErrorMessage)> RejectExpenseAsync(int expenseId, int reviewerUserId)
     {
         try
         {
@@ -225,20 +161,11 @@ public class ExpenseService : IExpenseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "RejectExpense failed");
-            return (false, BuildError(ex, callerFile, callerLine));
+            return (false, BuildError(ex, "RejectExpenseAsync"));
         }
     }
 
-    public async Task<(bool Success, string? ErrorMessage)> RejectExpenseAsync(int expenseId, int reviewerUserId)
-        => await RejectExpenseAsync(expenseId, reviewerUserId);
-
-    // ---------------------------------------------------------------
-    // GetPendingExpenses
-    // ---------------------------------------------------------------
-    public async Task<(List<Expense> Expenses, string? ErrorMessage)> GetPendingExpensesAsync(
-        string? filter = null,
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(List<Expense> Expenses, string? ErrorMessage)> GetPendingExpensesAsync(string? filter = null)
     {
         try
         {
@@ -254,19 +181,11 @@ public class ExpenseService : IExpenseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "GetPendingExpenses failed");
-            return (GetDummyPendingExpenses(), BuildError(ex, callerFile, callerLine));
+            return (GetDummyPendingExpenses(), BuildError(ex, "GetPendingExpensesAsync"));
         }
     }
 
-    public async Task<(List<Expense> Expenses, string? ErrorMessage)> GetPendingExpensesAsync(string? filter = null)
-        => await GetPendingExpensesAsync(filter);
-
-    // ---------------------------------------------------------------
-    // GetCategories
-    // ---------------------------------------------------------------
-    public async Task<(List<Category> Categories, string? ErrorMessage)> GetCategoriesAsync(
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(List<Category> Categories, string? ErrorMessage)> GetCategoriesAsync()
     {
         try
         {
@@ -291,19 +210,11 @@ public class ExpenseService : IExpenseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "GetCategories failed");
-            return (GetDummyCategories(), BuildError(ex, callerFile, callerLine));
+            return (GetDummyCategories(), BuildError(ex, "GetCategoriesAsync"));
         }
     }
 
-    public async Task<(List<Category> Categories, string? ErrorMessage)> GetCategoriesAsync()
-        => await GetCategoriesAsync();
-
-    // ---------------------------------------------------------------
-    // GetUsers
-    // ---------------------------------------------------------------
-    public async Task<(List<User> Users, string? ErrorMessage)> GetUsersAsync(
-        [CallerFilePath] string callerFile = "",
-        [CallerLineNumber] int callerLine = 0)
+    public async Task<(List<User> Users, string? ErrorMessage)> GetUsersAsync()
     {
         try
         {
@@ -334,16 +245,12 @@ public class ExpenseService : IExpenseService
         catch (Exception ex)
         {
             _logger.LogError(ex, "GetUsers failed");
-            return (GetDummyUsers(), BuildError(ex, callerFile, callerLine));
+            return (GetDummyUsers(), BuildError(ex, "GetUsersAsync"));
         }
     }
 
-    public async Task<(List<User> Users, string? ErrorMessage)> GetUsersAsync()
-        => await GetUsersAsync();
+    // ── Private helpers ──────────────────────────────────────────────────────
 
-    // ---------------------------------------------------------------
-    // Private helpers: read expense rows + dummy data fallbacks
-    // ---------------------------------------------------------------
     private static async Task<List<Expense>> ReadExpensesAsync(SqlCommand cmd)
     {
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -386,8 +293,8 @@ public class ExpenseService : IExpenseService
 
     private static List<Expense> GetDummyPendingExpenses() => new()
     {
-        new Expense { ExpenseId=1, UserId=1, UserName="Alice Example", Email="alice@example.co.uk", CategoryId=1, CategoryName="Travel",   StatusId=2, StatusName="Submitted", AmountMinor=2540,  AmountGBP=25.40m,  Currency="GBP", ExpenseDate=new DateTime(2025,10,20), Description="Taxi from airport to client site", CreatedAt=DateTime.UtcNow },
-        new Expense { ExpenseId=5, UserId=1, UserName="Alice Example", Email="alice@example.co.uk", CategoryId=3, CategoryName="Supplies", StatusId=2, StatusName="Submitted", AmountMinor=9950,  AmountGBP=99.50m,  Currency="GBP", ExpenseDate=new DateTime(2025,12,14), Description="Office Supplies",                  CreatedAt=DateTime.UtcNow }
+        new Expense { ExpenseId=1, UserId=1, UserName="Alice Example", Email="alice@example.co.uk", CategoryId=1, CategoryName="Travel",   StatusId=2, StatusName="Submitted", AmountMinor=2540, AmountGBP=25.40m, Currency="GBP", ExpenseDate=new DateTime(2025,10,20), Description="Taxi from airport to client site", CreatedAt=DateTime.UtcNow },
+        new Expense { ExpenseId=5, UserId=1, UserName="Alice Example", Email="alice@example.co.uk", CategoryId=3, CategoryName="Supplies", StatusId=2, StatusName="Submitted", AmountMinor=9950, AmountGBP=99.50m, Currency="GBP", ExpenseDate=new DateTime(2025,12,14), Description="Office Supplies",                  CreatedAt=DateTime.UtcNow }
     };
 
     private static List<Category> GetDummyCategories() => new()
@@ -401,7 +308,7 @@ public class ExpenseService : IExpenseService
 
     private static List<User> GetDummyUsers() => new()
     {
-        new User { UserId=1, UserName="Alice Example",  Email="alice@example.co.uk",          RoleId=1, RoleName="Employee", IsActive=true, CreatedAt=DateTime.UtcNow },
-        new User { UserId=2, UserName="Bob Manager",    Email="bob.manager@example.co.uk",    RoleId=2, RoleName="Manager",  IsActive=true, CreatedAt=DateTime.UtcNow }
+        new User { UserId=1, UserName="Alice Example", Email="alice@example.co.uk",       RoleId=1, RoleName="Employee", IsActive=true, CreatedAt=DateTime.UtcNow },
+        new User { UserId=2, UserName="Bob Manager",   Email="bob.manager@example.co.uk", RoleId=2, RoleName="Manager",  IsActive=true, CreatedAt=DateTime.UtcNow }
     };
 }
