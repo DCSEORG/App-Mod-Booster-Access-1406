@@ -1,0 +1,17 @@
+Work required:
+
+- Examine existing code ... code is located in the folder ./Legacy_App
+
+- Examine the new designs... images are in the folder ./New_Designs
+
+- Crawl the website at ./Legacy_App because the app you create should have all that functionality 
+
+- Stub out any API calls in the code to return dummy data for now 
+
+- Create new stylesheets for new design 
+
+- Create a new app code in the folder ./New_App 
+
+- Use Playright to check application works 
+
+- Explain any limitations you encountered while working in the Limitations.txt file such as only being able to view X number of images while running 
