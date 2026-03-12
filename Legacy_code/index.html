@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Details - Dial Direct</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-step="1">
+
+    <!-- Header -->
+    <header class="page-header">
+        <div class="page-header__wrapper">
+            <div>
+                <a href="index.html" class="page-header__logo-text">dial<em>direct</em></a>
+            </div>
+            <div class="page-header__phone">
+                Get a quote online or call us free
+                <strong>0800 068 0023</strong>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress breadcrumb -->
+    <nav class="progress-bar" aria-label="Quote progress">
+        <div class="progress-bar__inner">
+            <div class="progress-bar__track"></div>
+            <div class="step step--active" data-step="1">
+                <div class="step__circle">1</div>
+                <span class="step__label">Your details</span>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step__circle">2</div>
+                <span class="step__label">Your car</span>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step__circle">3</div>
+                <span class="step__label">Your cover</span>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step__circle">4</div>
+                <span class="step__label">Quote</span>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Banner -->
+        <div style="background:linear-gradient(135deg,#5d305e 0%,#8d4a8e 100%);color:#fff;padding:36px 20px;text-align:center;">
+            <div style="max-width:700px;margin:0 auto;">
+                <h1 style="font-size:32px;font-weight:700;margin-bottom:8px;">Welcome to Dial Direct Car Insurance</h1>
+                <p style="font-size:17px;opacity:0.9;font-weight:300;">We'll search our panel of car insurers to find a great policy for you</p>
+            </div>
+        </div>
+
+        <div class="page-section page-section--narrow">
+
+            <!-- SECTION A: Before you begin -->
+            <div class="card" id="section-before">
+                <h2 class="card__title">Before you begin</h2>
+                <p style="font-size:15px;margin-bottom:12px;">
+                    Dial Direct Insurance is arranged and administered by BISL Limited, an insurance intermediary.
+                    References to 'We', 'Us' and 'Our' mean BISL Limited.
+                    Any information you give to us will only be used to provide you with a Dial Direct Insurance quote and/or policy.
+                </p>
+                <div class="info-box">
+                    <span>⚠️</span>
+                    <span>It is important that the information you provide throughout the quote and duration of the policy is accurate.
+                    Failure to disclose correct and complete information may result in increased premiums, refusal of a claim,
+                    your policy being cancelled or being made null &amp; void.</span>
+                </div>
+            </div>
+
+            <!-- SECTION B: Tell us about yourself -->
+            <div class="card" id="section-aboutyou">
+                <h2 class="card__title">Tell us about yourself</h2>
+                <p class="card__subtitle">We'll use this information to find the right quote for you.</p>
+
+                <!-- Title -->
+                <div class="form-row">
+                    <label class="form-row__label"><strong>Title</strong></label>
+                    <div class="radio-pills" id="title-pills">
+                        <div class="radio-pill"><input type="radio" name="title" id="title-mr"   value="MR">  <label for="title-mr">Mr</label></div>
+                        <div class="radio-pill"><input type="radio" name="title" id="title-mrs"  value="MRS"> <label for="title-mrs">Mrs</label></div>
+                        <div class="radio-pill"><input type="radio" name="title" id="title-ms"   value="MS">  <label for="title-ms">Ms</label></div>
+                        <div class="radio-pill"><input type="radio" name="title" id="title-miss" value="MISS"><label for="title-miss">Miss</label></div>
+                        <div class="radio-pill"><input type="radio" name="title" id="title-mx"   value="MX">  <label for="title-mx">Mx</label></div>
+                        <div class="radio-pill"><input type="radio" name="title" id="title-dr"   value="DR">  <label for="title-dr">Dr</label></div>
+                    </div>
+                    <div class="form-row__validation-text" id="err-title">Please select a title</div>
+                </div>
+
+                <!-- First name + Surname -->
+                <div class="form-row">
+                    <div class="form-row__two-col">
+                        <div>
+                            <label class="form-row__label" for="firstName"><strong>First name</strong></label>
+                            <input class="form-control" type="text" id="firstName" name="firstName"
+                                   autocomplete="given-name" maxlength="20" placeholder="e.g. John">
+                            <div class="form-row__validation-text" id="err-firstName">Please enter your first name</div>
+                        </div>
+                        <div>
+                            <label class="form-row__label" for="lastName"><strong>Surname</strong></label>
+                            <input class="form-control" type="text" id="lastName" name="lastName"
+                                   autocomplete="family-name" maxlength="20" placeholder="e.g. Smith">
+                            <div class="form-row__validation-text" id="err-lastName">Please enter your surname</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date of birth -->
+                <div class="form-row">
+                    <label class="form-row__label" for="dob"><strong>Date of birth</strong></label>
+                    <div class="form-row__hint">DD/MM/YYYY</div>
+                    <input class="form-control form-control--date" type="text" id="dob" name="dob"
+                           placeholder="DD/MM/YYYY" maxlength="10" autocomplete="bday">
+                    <div class="form-row__validation-text" id="err-dob">Please enter a valid date of birth (DD/MM/YYYY)</div>
+                </div>
+            </div>
+
+            <!-- SECTION C: How we use your data -->
+            <div class="card" id="section-privacy">
+                <h2 class="card__title">How we use your data</h2>
+                <p style="font-size:15px;margin-bottom:10px;">We will use your data for the purposes of providing your quote which may include:</p>
+                <ul style="font-size:14px;padding-left:20px;line-height:1.8;color:#4a4a4a;">
+                    <li>Sharing your data with our insurers. You can see a list in our <a href="#" style="color:#6e3a70;">Privacy Policy</a>.</li>
+                    <li>Using your data for fraud prevention and to verify the information you provide to us.</li>
+                    <li>Checks with external databases such as credit reference agencies and publicly available sources of information.</li>
+                    <li>Any credit searches will appear on your credit report but will not be visible to other lenders, unless you take out a policy and choose to pay by monthly instalments.</li>
+                </ul>
+                <p style="font-size:13px;color:#666;margin-top:12px;">
+                    Our <a href="#" style="color:#6e3a70;">Privacy Policy</a> provides more details of how your data is used,
+                    the legal basis that we rely on to process it and gives you information on the rights you have over your data.
+                </p>
+
+                <div class="card__divider"></div>
+
+                <p style="font-size:14px;color:#4a4a4a;margin-bottom:16px;">
+                    Choosing to continue by selecting <strong>'Start my quote'</strong>, you are confirming that you have read and agreed to our:
+                </p>
+                <ul style="font-size:14px;padding-left:20px;line-height:2;color:#4a4a4a;">
+                    <li><a href="#" style="color:#6e3a70;">Terms and conditions</a></li>
+                    <li><a href="#" style="color:#6e3a70;">Quote acceptance information</a></li>
+                </ul>
+
+                <div class="button-container" style="border:none;padding-top:20px;">
+                    <span></span>
+                    <button class="button button--primary button--large" id="btn-start-quote">
+                        Start my quote →
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Trust strip -->
+    <div class="trust-strip">
+        <div class="trust-strip__inner">
+            <div class="trust-item"><span class="trust-item__icon">✓</span> FCA Authorised &amp; Regulated</div>
+            <div class="trust-item"><span class="trust-item__icon">✓</span> No hidden fees</div>
+            <div class="trust-item"><span class="trust-item__icon">✓</span> RAC Breakdown included</div>
+            <div class="trust-item"><span class="trust-item__icon">✓</span> UK-based claims team, 24/7</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer__inner">
+            <div class="footer__col">
+                <h4>Insurance</h4>
+                <ul>
+                    <li><a href="#">Car Insurance</a></li>
+                    <li><a href="#">Van Insurance</a></li>
+                    <li><a href="#">Home Insurance</a></li>
+                </ul>
+            </div>
+            <div class="footer__col">
+                <h4>Help &amp; Support</h4>
+                <ul>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Make a Claim</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer__col">
+                <h4>About Us</h4>
+                <ul>
+                    <li><a href="#">About Dial Direct</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p>&copy; <span id="footer-year"></span> Dial Direct Insurance Services Limited. Registered in England and Wales No. 2691086.
+            Authorised and regulated by the Financial Conduct Authority (FCA No. 306283).
+            Registered office: Pegasus House, Bakewell Road, Orton Southgate, Peterborough, PE2 6YS.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+    (function () {
+        // Auto-format DOB as DD/MM/YYYY
+        const dobInput = document.getElementById('dob');
+        dobInput.addEventListener('input', function (e) {
+            let v = this.value.replace(/\D/g, '');
+            if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+            if (v.length > 5) v = v.slice(0,5) + '/' + v.slice(5,9);
+            this.value = v;
+        });
+
+        // Validate DOB
+        function parseDOB(str) {
+            const m = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (!m) return null;
+            const d = new Date(m[3], m[2]-1, m[1]);
+            if (d.getDate() !== +m[1] || d.getMonth() !== m[2]-1) return null;
+            return d;
+        }
+
+        function showErr(id, msg) {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = msg || el.textContent; el.classList.add('visible'); }
+        }
+        function clearErr(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('visible');
+        }
+
+        document.getElementById('btn-start-quote').addEventListener('click', function () {
+            let valid = true;
+
+            // Title
+            const titleVal = document.querySelector('input[name="title"]:checked');
+            if (!titleVal) { showErr('err-title'); valid = false; }
+            else clearErr('err-title');
+
+            // First name
+            const fn = document.getElementById('firstName');
+            if (!fn.value.trim() || fn.value.trim().length < 2) {
+                fn.classList.add('form-control--error'); showErr('err-firstName'); valid = false;
+            } else { fn.classList.remove('form-control--error'); clearErr('err-firstName'); }
+
+            // Last name
+            const ln = document.getElementById('lastName');
+            if (!ln.value.trim() || ln.value.trim().length < 2) {
+                ln.classList.add('form-control--error'); showErr('err-lastName'); valid = false;
+            } else { ln.classList.remove('form-control--error'); clearErr('err-lastName'); }
+
+            // DOB
+            const dob = document.getElementById('dob');
+            const dobDate = parseDOB(dob.value);
+            const today = new Date();
+            const minAge = new Date(today.getFullYear()-17, today.getMonth(), today.getDate());
+            const maxAge = new Date(today.getFullYear()-100, today.getMonth(), today.getDate());
+            if (!dobDate || dobDate > minAge || dobDate < maxAge) {
+                dob.classList.add('form-control--error'); showErr('err-dob'); valid = false;
+            } else { dob.classList.remove('form-control--error'); clearErr('err-dob'); }
+
+            if (!valid) {
+                // Scroll to first error
+                document.querySelector('.form-row__validation-text.visible')
+                    ?.closest('.form-row')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Save data
+            Store.clear();
+            Store.set('title', titleVal.value);
+            Store.set('firstName', fn.value.trim());
+            Store.set('lastName', ln.value.trim());
+            Store.set('dob', dob.value);
+
+            window.location.href = 'your-car.html';
+        });
+
+        // Enter key on last input
+        document.getElementById('dob').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('btn-start-quote').click();
+        });
+    })();
+    </script>
+</body>
+</html>
