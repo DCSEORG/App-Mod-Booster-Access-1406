@@ -2,13 +2,15 @@ Work required:
 
 - Examine existing code ... code is located in the folder ./Legacy_App
 
-- Examine the new designs... images are in the folder ./New_Designs
+- Examine the new designs... images are in the folder ./New_Design
 
 - Crawl the website at ./Legacy_App because the app you create should have all that functionality 
 
 - Stub out any API calls in the code to return dummy data for now 
 
 - Create new stylesheets for new design 
+
+- Use the logo.png in the New_Design folder for the top left logo always
 
 - Create a new app code in the folder ./New_App 
 
