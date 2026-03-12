@@ -15,7 +15,7 @@ When asked to "rebrand my app" you must read the following prompts:
 
 prompt-rebrand-001
 
-Then use the code in the legacy_code folder and the designs in the new_design folder to update the app code to the new design.
+Then use the code in the legacy_code folder and the designs in the new_design folder to update the app code to the new design. Do not consider code or designs or assests or instructions in any other files or folders.
 
 When asked to "modernise my app" you must read only the prompt files that are listed in the prompt-order file in the order listed there until you have finished compiling all the work you need to do.
 
