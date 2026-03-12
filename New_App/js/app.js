@@ -60,6 +60,8 @@ function lookupVehicle(rawReg) {
 // ── Quote price calculation ───────────────────────────────
 /** Finance uplift applied to monthly payments (represents ~7% APR for instalment plans) */
 const MONTHLY_FINANCE_UPLIFT = 0.07;
+/** Number of months in a year */
+const MONTHS_PER_YEAR = 12;
 
 /**
  * Calculate an indicative insurance quote price.
@@ -114,7 +116,7 @@ function calculateQuote(data) {
     base = Math.max(base, 220);
 
     const annual  = Math.round(base);
-    const monthly = parseFloat((annual / 12 * (1 + MONTHLY_FINANCE_UPLIFT)).toFixed(2)); // Monthly includes finance uplift
+    const monthly = parseFloat((annual / MONTHS_PER_YEAR * (1 + MONTHLY_FINANCE_UPLIFT)).toFixed(2)); // Monthly includes finance uplift
 
     return { monthly, annual };
 }
