@@ -8,6 +8,10 @@ Steps:
 
 - Crawl the website at ./Legacy_App because the app you create should have all that functionality 
 
+- Add any additional html pages you need to match all the screenshots in ./New_Design
+
+- Use 'Page 1' design as first web page and your_cover.png as the last page in the journey (ie the your_cover.html)
+
 - Stub out any API calls in the code to return dummy data for now 
 
 - Create new stylesheets for new design 
