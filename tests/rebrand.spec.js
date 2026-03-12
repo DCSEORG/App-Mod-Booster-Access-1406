@@ -4,6 +4,11 @@ const path = require('path');
 
 const BASE = 'file://' + path.resolve(__dirname, '../New_App');
 
+// ── Test timeout constants ────────────────────────────────
+const VEHICLE_LOOKUP_TIMEOUT_MS = 5000;
+const PANEL_TRANSITION_TIMEOUT_MS = 3000;
+const QUOTE_RENDER_TIMEOUT_MS = 5000;
+
 test.describe('Swinton Go! Insurance - Rebrand Tests', () => {
 
     test('Page 1 (index.html) loads with Swinton Go branding', async ({ page }) => {
@@ -77,7 +82,7 @@ test.describe('Swinton Go! Insurance - Rebrand Tests', () => {
         await page.click('#btn-find-car');
 
         // Wait for vehicle found panel
-        await page.waitForSelector('#panel-vehicle-found', { state: 'visible', timeout: 5000 });
+        await page.waitForSelector('#panel-vehicle-found', { state: 'visible', timeout: VEHICLE_LOOKUP_TIMEOUT_MS });
         await expect(page.locator('#veh-title')).toContainText('Volkswagen');
 
         // Confirm vehicle
@@ -85,7 +90,7 @@ test.describe('Swinton Go! Insurance - Rebrand Tests', () => {
         await page.click('#btn-confirm-vehicle');
 
         // Wait for questions panel
-        await page.waitForSelector('#panel-questions', { state: 'visible', timeout: 3000 });
+        await page.waitForSelector('#panel-questions', { state: 'visible', timeout: PANEL_TRANSITION_TIMEOUT_MS });
 
         // Fill car questions
         await page.fill('#purchase-date', '06/2022');
@@ -124,7 +129,7 @@ test.describe('Swinton Go! Insurance - Rebrand Tests', () => {
         await expect(page).toHaveTitle(/Your Quote/);
 
         // Wait for quote to be calculated and rendered
-        await page.waitForSelector('.quote-hero', { timeout: 5000 });
+        await page.waitForSelector('.quote-hero', { timeout: QUOTE_RENDER_TIMEOUT_MS });
 
         // Check quote hero is displayed
         await expect(page.locator('.quote-hero')).toBeVisible();
