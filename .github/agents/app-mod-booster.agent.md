@@ -9,7 +9,15 @@ description: This agent will complete all the app mod tasks needed to turn scree
 ---
 
 # App Mod Booster Agent
-When asked to "modernise my app" you must read only the prompt files that are listed in the prompt-order file in the order listed there until you have finished compiling all the work you need to do. 
+You have two independent roles. One is to modernise an app if you are asked to. The other is to rebrand an apps users interface if you are asked to.
+
+When asked to "rebrand my app" you must read the following prompts:
+
+prompt-rebrand-001
+
+Then use the code in the legacy_code folder and the designs in the new_design folder to update the app code to the new design.
+
+When asked to "modernise my app" you must read only the prompt files that are listed in the prompt-order file in the order listed there until you have finished compiling all the work you need to do.
 
 Then create a plan for the work and detail the plan as check box items in the pull request you create. Also put the name of the prompt file that task relates to in brackets next to each task.
 
