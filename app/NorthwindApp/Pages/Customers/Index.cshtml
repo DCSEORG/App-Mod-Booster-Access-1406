@@ -1,0 +1,102 @@
+@page
+@model NorthwindApp.Pages.Customers.IndexModel
+@{
+    ViewData["Title"] = "Customers";
+}
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="error-banner mx-4 mt-3">
+        <div class="error-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error</div>
+        <div class="error-detail">@Model.ErrorMessage</div>
+        <div class="error-detail"><small>File: @Model.ErrorFile | Line: @Model.ErrorLine</small></div>
+        @if (Model.ErrorMessage.Contains("Managed Identity") || Model.ErrorMessage.Contains("authentication"))
+        {
+            <div class="mt-2 p-2 bg-white text-dark rounded small">
+                <strong>Fix:</strong> Ensure the App Service has the User-Assigned Managed Identity assigned and <code>AZURE_CLIENT_ID</code> app setting is set to the MI client ID.
+            </div>
+        }
+    </div>
+}
+@if (Model.IsUsingDummyData)
+{
+    <div class="warning-banner mx-4 mt-3"><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Demo Mode:</strong> Showing sample data.</div>
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="bi bi-people me-2"></i>Customers</h1>
+        <a asp-page="Create" class="btn btn-primary"><i class="bi bi-person-plus me-2"></i>Add Customer</a>
+    </div>
+</div>
+
+<div class="px-4">
+    <div class="card">
+        <div class="card-header p-3 d-flex align-items-center">
+            <form method="get" class="d-flex gap-2 flex-grow-1">
+                <input type="text" name="filter" value="@Model.Filter" class="form-control" placeholder="Search customers..." style="max-width: 300px;" />
+                <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+                @if (!string.IsNullOrEmpty(Model.Filter))
+                {
+                    <a asp-page="Index" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
+                }
+            </form>
+            <span class="ms-auto text-muted small">@Model.Customers.Count customers</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="px-3">Name</th>
+                            <th>Contact</th>
+                            <th>Phone</th>
+                            <th>City</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.Customers)
+                        {
+                            <tr>
+                                <td class="px-3 fw-bold">@c.CustomerName</td>
+                                <td>
+                                    @($"{c.PrimaryContactFirstName} {c.PrimaryContactLastName}".Trim())
+                                    @if (!string.IsNullOrEmpty(c.PrimaryContactJobTitle))
+                                    {
+                                        <br /><small class="text-muted">@c.PrimaryContactJobTitle</small>
+                                    }
+                                </td>
+                                <td>@c.BusinessPhone</td>
+                                <td>@c.City@(!string.IsNullOrEmpty(c.State) ? $", {c.State}" : "")</td>
+                                <td>
+                                    <a asp-page="Edit" asp-route-id="@c.CustomerID" class="btn btn-sm btn-outline-primary btn-action me-1">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteCustomer(@c.CustomerID)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Customers.Any())
+                        {
+                            <tr><td colspan="5" class="text-center py-4 text-muted">No customers found.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+async function deleteCustomer(id) {
+    if (!confirm('Are you sure you want to delete this customer?')) return;
+    const response = await fetch('/api/customers/' + id, { method: 'DELETE' });
+    if (response.ok) location.reload();
+    else alert('Error deleting customer.');
+}
+</script>
+}
