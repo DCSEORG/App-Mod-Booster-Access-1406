@@ -57,17 +57,9 @@ resource northwindDb 'Microsoft.Sql/servers/databases@2021-11-01' = {
   }
 }
 
-// Grant managed identity DatabaseManager role at server level
-resource managedIdentityServerRole 'Microsoft.Sql/servers/administrators@2021-11-01' = if (false) {
-  parent: sqlServer
-  name: 'ActiveDirectory'
-  properties: {
-    administratorType: 'ActiveDirectory'
-    login: 'managed-identity'
-    sid: managedIdentityPrincipalId
-    tenantId: subscription().tenantId
-  }
-}
+// Note: Managed identity DB access is granted via run-sql-dbrole.py post-deployment
+// (script.sql grants db_datareader, db_datawriter, and EXECUTE to the MI)
+// This cannot be done directly in Bicep as it requires a SQL command within the database.
 
 output sqlServerFqdn string = sqlServer.properties.fullyQualifiedDomainName
 output sqlServerName string = sqlServer.name

@@ -27,7 +27,12 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) { var c = _httpClientFactory.CreateClient("NorthwindApi"); await LoadDropdownsAsync(c); return Page(); }
+        if (!ModelState.IsValid)
+        {
+            var c = _httpClientFactory.CreateClient("NorthwindApi");
+            await LoadDropdownsAsync(c);
+            return Page();
+        }
         var client = _httpClientFactory.CreateClient("NorthwindApi");
         var response = await client.PutAsJsonAsync($"api/orders/{Order.OrderID}", Order);
         return response.IsSuccessStatusCode ? RedirectToPage("Index") : Page();

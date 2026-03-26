@@ -284,9 +284,13 @@ CREATE OR ALTER PROCEDURE [dbo].[usp_DeleteOrder]
 AS
 BEGIN
     SET NOCOUNT ON;
+    DECLARE @DetailsDeleted INT = 0;
+    DECLARE @OrderDeleted INT = 0;
     DELETE FROM [dbo].[OrderDetails] WHERE OrderID = @OrderID;
+    SET @DetailsDeleted = @@ROWCOUNT;
     DELETE FROM [dbo].[Orders] WHERE OrderID = @OrderID;
-    SELECT @@ROWCOUNT AS RowsAffected;
+    SET @OrderDeleted = @@ROWCOUNT;
+    SELECT @OrderDeleted AS RowsAffected;
 END
 GO
 
