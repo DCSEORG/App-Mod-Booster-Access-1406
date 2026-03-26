@@ -36,7 +36,14 @@
                     <option value="">All Statuses</option>
                     @foreach (var status in Model.Statuses)
                     {
-                        <option value="@status.StatusID" @(Model.StatusFilter == status.StatusID ? "selected" : "")>@status.StatusName</option>
+                        @if (Model.StatusFilter == status.StatusID)
+                        {
+                            <option value="@status.StatusID" selected>@status.StatusName</option>
+                        }
+                        else
+                        {
+                            <option value="@status.StatusID">@status.StatusName</option>
+                        }
                     }
                 </select>
                 @if (Model.StatusFilter.HasValue)
