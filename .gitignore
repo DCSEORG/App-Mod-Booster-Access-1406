@@ -1,0 +1,12 @@
+*.user
+*.suo
+.vs/
+bin/
+obj/
+publish/
+*.log
+node_modules/
+.env
+
+# App zip - explicitly included for deployment
+!app/app.zip

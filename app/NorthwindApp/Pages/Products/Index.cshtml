@@ -1,0 +1,88 @@
+@page
+@model NorthwindApp.Pages.Products.IndexModel
+@{
+    ViewData["Title"] = "Products";
+}
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="error-banner mx-4 mt-3">
+        <div class="error-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error</div>
+        <div class="error-detail">@Model.ErrorMessage</div>
+        <div class="error-detail"><small>File: @Model.ErrorFile | Line: @Model.ErrorLine</small></div>
+        @if (Model.ErrorMessage.Contains("Managed Identity") || Model.ErrorMessage.Contains("authentication"))
+        {
+            <div class="mt-2 p-2 bg-white text-dark rounded small"><strong>Fix:</strong> Ensure the App Service has the User-Assigned Managed Identity assigned and <code>AZURE_CLIENT_ID</code> app setting is set to the MI client ID.</div>
+        }
+    </div>
+}
+@if (Model.IsUsingDummyData)
+{
+    <div class="warning-banner mx-4 mt-3"><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Demo Mode:</strong> Showing sample data.</div>
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="bi bi-box me-2"></i>Products</h1>
+        <a asp-page="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>Add Product</a>
+    </div>
+</div>
+
+<div class="px-4">
+    <div class="card">
+        <div class="card-header p-3 d-flex align-items-center">
+            <form method="get" class="d-flex gap-2 flex-grow-1">
+                <input type="text" name="filter" value="@Model.Filter" class="form-control" placeholder="Search products..." style="max-width: 300px;" />
+                <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+                @if (!string.IsNullOrEmpty(Model.Filter))
+                {
+                    <a asp-page="Index" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
+                }
+            </form>
+            <span class="ms-auto text-muted small">@Model.Products.Count products</span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="px-3">Code</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Products)
+                    {
+                        <tr>
+                            <td class="px-3"><span class="badge bg-light text-dark">@(p.ProductCode ?? "-")</span></td>
+                            <td class="fw-bold">@p.ProductName</td>
+                            <td><small class="text-muted">@(p.ProductDescription?.Length > 60 ? p.ProductDescription[..60] + "..." : p.ProductDescription)</small></td>
+                            <td>£@p.UnitPrice.ToString("N2")</td>
+                            <td>
+                                <a asp-page="Edit" asp-route-id="@p.ProductID" class="btn btn-sm btn-outline-primary btn-action me-1"><i class="bi bi-pencil"></i></a>
+                                <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteProduct(@p.ProductID)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Products.Any())
+                    {
+                        <tr><td colspan="5" class="text-center py-4 text-muted">No products found.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+async function deleteProduct(id) {
+    if (!confirm('Delete this product?')) return;
+    const response = await fetch('/api/products/' + id, { method: 'DELETE' });
+    if (response.ok) location.reload();
+    else alert('Error deleting product.');
+}
+</script>
+}
