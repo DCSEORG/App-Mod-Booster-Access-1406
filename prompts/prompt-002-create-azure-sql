@@ -1,3 +1,6 @@
+Use the access database file found in this reposity as the SQL Schemae you need ot create in Azure SQL. Also use that access app as the business logic (VBA code) and the front end 
+functionality needed instead of the legacy screenshots. But make the front end look modern.
+
 Create the Bicep code needed to deploy an Azure SQL Database with the following security requirements:
 
 1. **Azure AD-Only Authentication (Required by Policy)**:
