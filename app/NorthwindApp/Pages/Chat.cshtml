@@ -1,0 +1,151 @@
+@page
+@model NorthwindApp.Pages.ChatModel
+@{
+    ViewData["Title"] = "AI Chat";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-chat-dots me-2"></i>AI Assistant</h1>
+            <small class="text-muted">Powered by Azure OpenAI GPT-4o</small>
+        </div>
+        @if (!Model.IsAvailable)
+        {
+            <span class="badge bg-warning text-dark">GenAI Not Configured</span>
+        }
+        else
+        {
+            <span class="badge bg-success">AI Ready</span>
+        }
+    </div>
+</div>
+
+<div class="px-4">
+    @if (!Model.IsAvailable)
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>GenAI services not yet deployed.</strong> Run <code>deploy-with-chat.sh</code> for the full AI experience.
+        </div>
+    }
+
+    <div class="card" style="height: calc(100vh - 280px); display: flex; flex-direction: column;">
+        <div id="chatMessages" class="card-body overflow-auto flex-grow-1 p-3" style="background: #f8f9fa;">
+            <div class="chat-bubble assistant">
+                <strong>Northwind Assistant:</strong><br />
+                Hello! I can help you with customers, orders, products, and employees. What would you like to know?
+            </div>
+        </div>
+        <div class="card-footer p-3">
+            <div class="d-flex gap-2">
+                <input type="text" id="chatInput" class="form-control" placeholder="Ask about your data..." 
+                       onkeypress="if(event.key==='Enter') sendMessage()" @(Model.IsAvailable ? "" : "disabled") />
+                <button class="btn btn-primary" onclick="sendMessage()" @(Model.IsAvailable ? "" : "disabled")>
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
+            <div class="mt-2">
+                <small class="text-muted">Try: "Show me all customers" | "What are the recent orders?" | "List all products"</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const history = [];
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    appendMessage('user', message);
+    input.value = '';
+    history.push({ role: 'user', content: message });
+    
+    const typingId = appendTyping();
+    
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message, history: history.slice(-10) })
+        });
+        
+        removeTyping(typingId);
+        
+        if (response.ok) {
+            const data = await response.json();
+            const formatted = formatResponse(data.response);
+            appendMessage('assistant', formatted, true);
+            history.push({ role: 'assistant', content: data.response });
+        } else {
+            appendMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+        }
+    } catch (error) {
+        removeTyping(typingId);
+        appendMessage('assistant', 'Connection error. Please check your network.');
+    }
+}
+
+function formatResponse(text) {
+    // Escape HTML first
+    let escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    
+    // Convert **text** to <strong>
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Convert numbered lists
+    escaped = escaped.replace(/^(\d+\.\s.+)$/gm, '<li>$1</li>');
+    escaped = escaped.replace(/(<li>\d+\..+<\/li>\n?)+/g, '<ol>$&</ol>');
+    
+    // Convert bullet lists
+    escaped = escaped.replace(/^[-*]\s(.+)$/gm, '<li>$1</li>');
+    escaped = escaped.replace(/(<li>[^<\d].+<\/li>\n?)+/g, '<ul>$&</ul>');
+    
+    // Convert newlines
+    escaped = escaped.replace(/\n/g, '<br>');
+    
+    return escaped;
+}
+
+function appendMessage(role, content, isHtml = false) {
+    const container = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = `chat-bubble ${role}`;
+    if (role === 'assistant') {
+        div.innerHTML = `<strong>Assistant:</strong><br />${isHtml ? content : escapeHtml(content)}`;
+    } else {
+        div.innerHTML = `<strong>You:</strong><br />${escapeHtml(content)}`;
+    }
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div.id = 'msg-' + Date.now();
+}
+
+function appendTyping() {
+    const container = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'chat-bubble assistant';
+    div.id = 'typing-' + Date.now();
+    div.innerHTML = '<em>Thinking...</em>';
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div.id;
+}
+
+function removeTyping(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+}
+
+function escapeHtml(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+</script>
+}

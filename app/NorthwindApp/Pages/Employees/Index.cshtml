@@ -1,0 +1,82 @@
+@page
+@model NorthwindApp.Pages.Employees.IndexModel
+@{
+    ViewData["Title"] = "Employees";
+}
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="error-banner mx-4 mt-3">
+        <div class="error-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error</div>
+        <div class="error-detail">@Model.ErrorMessage</div>
+        <div class="error-detail"><small>File: @Model.ErrorFile | Line: @Model.ErrorLine</small></div>
+        @if (Model.ErrorMessage.Contains("Managed Identity") || Model.ErrorMessage.Contains("authentication"))
+        {
+            <div class="mt-2 p-2 bg-white text-dark rounded small"><strong>Fix:</strong> Ensure the App Service has the User-Assigned Managed Identity assigned and <code>AZURE_CLIENT_ID</code> app setting is set to the MI client ID.</div>
+        }
+    </div>
+}
+@if (Model.IsUsingDummyData)
+{
+    <div class="warning-banner mx-4 mt-3"><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Demo Mode:</strong> Showing sample data.</div>
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="bi bi-person-badge me-2"></i>Employees</h1>
+        <a asp-page="Create" class="btn btn-primary"><i class="bi bi-person-plus-fill me-2"></i>Add Employee</a>
+    </div>
+</div>
+
+<div class="px-4">
+    <div class="card">
+        <div class="card-header p-3">
+            <span class="text-muted small">@Model.Employees.Count employees</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="px-3">Name</th>
+                            <th>Title</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model.Employees)
+                        {
+                            <tr>
+                                <td class="px-3 fw-bold">@e.FullNameFNLN</td>
+                                <td>@e.JobTitle</td>
+                                <td>@e.EmailAddress</td>
+                                <td>@e.PrimaryPhone</td>
+                                <td>
+                                    <a asp-page="Edit" asp-route-id="@e.EmployeeID" class="btn btn-sm btn-outline-primary btn-action me-1"><i class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteEmployee(@e.EmployeeID)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Employees.Any())
+                        {
+                            <tr><td colspan="5" class="text-center py-4 text-muted">No employees found.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+async function deleteEmployee(id) {
+    if (!confirm('Delete this employee?')) return;
+    const response = await fetch('/api/employees/' + id, { method: 'DELETE' });
+    if (response.ok) location.reload();
+    else alert('Error deleting employee.');
+}
+</script>
+}

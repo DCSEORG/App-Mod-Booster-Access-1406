@@ -1,0 +1,76 @@
+@page "{id:int}"
+@model NorthwindApp.Pages.Customers.EditModel
+@{
+    ViewData["Title"] = "Edit Customer";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="bi bi-pencil me-2"></i>Edit Customer</h1>
+        <a asp-page="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a>
+    </div>
+</div>
+
+<div class="px-4">
+    <div class="card" style="max-width: 700px;">
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="Customer.CustomerID" />
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Company Name *</label>
+                        <input asp-for="Customer.CustomerName" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">First Name</label>
+                        <input asp-for="Customer.PrimaryContactFirstName" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name</label>
+                        <input asp-for="Customer.PrimaryContactLastName" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Job Title</label>
+                        <input asp-for="Customer.PrimaryContactJobTitle" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input asp-for="Customer.PrimaryContactEmailAddress" type="email" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input asp-for="Customer.BusinessPhone" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Website</label>
+                        <input asp-for="Customer.Website" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <input asp-for="Customer.Address" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">City</label>
+                        <input asp-for="Customer.City" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">State</label>
+                        <input asp-for="Customer.State" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Zip</label>
+                        <input asp-for="Customer.Zip" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Notes</label>
+                        <textarea asp-for="Customer.Notes" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary me-2"><i class="bi bi-check me-1"></i>Save</button>
+                        <a asp-page="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
